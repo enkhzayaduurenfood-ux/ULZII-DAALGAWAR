@@ -196,22 +196,46 @@
         <!-- SECTION: Ex 4 -->
         <section id="section-ex4" class="game-section hidden">
             <div class="bg-white rounded-xl md:rounded-2xl shadow-xl border-2 md:border-4 border-green-100 overflow-hidden">
-                <div class="bg-green-600 text-white p-3 md:p-4 text-center">
+                <div class="bg-green-500 text-white p-3 md:p-4 text-center">
                     <h2 class="text-lg md:text-xl font-bold"><i class="fa-solid fa-puzzle-piece mr-2"></i> Даалгавар 4: Word Friends</h2>
-                    <p class="text-xs md:text-sm opacity-90 mt-1">Дээрх үгсээс дарж сонгоод, доорх хоосон зайд дарж өгүүлбэрийг гүйцээнэ үү.</p>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">Үгсийн сангаас тохирох үйл үгийг сонгож, доорх хоосон зайд дарж байрлуулна уу.</p>
                 </div>
                 <div class="p-3 md:p-6">
                     <!-- Word Bank -->
                     <div class="bg-gray-100 p-3 md:p-4 rounded-xl border-2 border-gray-200 mb-6 md:mb-8 text-center">
-                        <p class="text-xs md:text-sm text-gray-500 mb-3 font-bold uppercase">Үгсийн сан (Эхлээд эндээс сонгоно уу)</p>
+                        <p class="text-xs md:text-sm text-gray-500 mb-3 font-bold uppercase">Үгсийн сан</p>
                         <div id="word-bank" class="flex flex-wrap justify-center gap-2 md:gap-3">
                             <!-- Word bank buttons injected via JS -->
                         </div>
                     </div>
 
                     <!-- Sentences -->
-                    <div id="ex4-content" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div id="ex4-content" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Ex 4 injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Ex 5 -->
+        <section id="section-ex5" class="game-section hidden">
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-xl border-2 md:border-4 border-pink-100 overflow-hidden">
+                <div class="bg-pink-500 text-white p-3 md:p-4 text-center">
+                    <h2 class="text-lg md:text-xl font-bold"><i class="fa-solid fa-comments mr-2"></i> Даалгавар 5: Complete & Answer</h2>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">4-р даалгаврын үйл үгсийг ашиглан асуултуудыг гүйцээж нөхөөрэй.</p>
+                </div>
+                <div class="p-3 md:p-6">
+                    <!-- Word Bank -->
+                    <div class="bg-gray-100 p-3 md:p-4 rounded-xl border-2 border-gray-200 mb-6 md:mb-8 text-center">
+                        <p class="text-xs md:text-sm text-gray-500 mb-3 font-bold uppercase">Үгсийн сан</p>
+                        <div id="word-bank-ex5" class="flex flex-wrap justify-center gap-2 md:gap-3">
+                            <!-- Word bank buttons injected via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Sentences -->
+                    <div id="ex5-content" class="space-y-4 md:space-y-6">
+                        <!-- Ex 5 injected via JS -->
                     </div>
                 </div>
             </div>
@@ -468,8 +492,27 @@
             { textAfter: "concerts/videos", mn: "(тоглолт/бичлэг үзэх)", ans: "watch" }
         ];
 
+        const ex5Data = [
+            { before: "1. Do you enjoy", after: "art? Why?/Why not?", mn: "Та урлаг бүтээх дуртай юу? Яагаад/Яагаад үгүй вэ?", ans: "creating" },
+            { before: "2. How hard is it for you to", after: "on stage?", mn: "Тайзан дээр тоглох(гарах) танд хэр хэцүү вэ?", ans: "perform" },
+            { before: "3. How often do you", after: "music videos on your phone?", mn: "Утсан дээрээ хөгжмийн бичлэг хэр олон удаа үздэг вэ?", ans: "watch" },
+            { before: "4. Who do you", after: "video games with?", mn: "Та хэнтэй видео тоглоом тоглодог вэ?", ans: "play" },
+            { before: "5. Would you like to", after: "a short film or an animation? Why?", mn: "Та богино хэмжээний кино эсвэл анимэйшн хиймээр байна уу? Яагаад?", ans: "make" },
+            { before: "6. What kind of things do you", after: "on social media?", mn: "Та олон нийтийн сүлжээнд ямар төрлийн зүйл хуваалцдаг вэ?", ans: "share" }
+        ];
+        
+        const ex5Words = [
+            { en: "creating", mn: "бүтээх" },
+            { en: "make", mn: "хийх" },
+            { en: "perform", mn: "тоглох" },
+            { en: "play", mn: "тоглох" },
+            { en: "share", mn: "хуваалцах" },
+            { en: "watch", mn: "үзэх" }
+        ];
+
         let activeTab = 'read';
         let selectedWordForDrop = null;
+        let selectedWordForDropEx5 = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             setupNavigation();
@@ -478,6 +521,7 @@
             renderEx2();
             renderEx3();
             renderEx4();
+            renderEx5();
             switchTab('read');
         });
 
@@ -488,6 +532,7 @@
                 { id: 'ex2', icon: 'fa-2', label: 'Даалгавар 2' },
                 { id: 'ex3', icon: 'fa-3', label: 'Даалгавар 3' },
                 { id: 'ex4', icon: 'fa-4', label: 'Даалгавар 4' },
+                { id: 'ex5', icon: 'fa-5', label: 'Даалгавар 5' },
             ];
 
             const navContainer = document.getElementById('nav-tabs');
@@ -785,6 +830,95 @@
                 // Check if game complete (optional confetti or sound could go here)
             } else {
                 // Wrong
+                boxElement.classList.add('animate-shake');
+                dropZone.classList.add('bg-red-100', 'border-red-400');
+                setTimeout(() => dropZone.classList.remove('bg-red-100', 'border-red-400'), 500);
+            }
+        }
+
+        function renderEx5() {
+            const bankContainer = document.getElementById('word-bank-ex5');
+            const sentencesContainer = document.getElementById('ex5-content');
+            
+            // Create Word Bank Buttons
+            ex5Words.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "flex flex-col items-center justify-center px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-white border-4 border-gray-300 hover:border-pink-500 hover:-translate-y-1 transition-all shadow-sm inter-font min-w-[80px] md:min-w-[100px]";
+                btn.innerHTML = `<span class="font-black text-base md:text-lg text-gray-800">${item.en}</span><span class="text-[10px] md:text-xs text-pink-600 font-bold mt-0.5 md:mt-1 leading-tight">${item.mn}</span>`;
+                btn.id = `bank-word-ex5-${item.en}`;
+                btn.onclick = () => selectWordFromBankEx5(item.en, btn);
+                bankContainer.appendChild(btn);
+            });
+
+            // Create Sentences with Dropzones
+            ex5Data.forEach((item, index) => {
+                const box = document.createElement('div');
+                box.className = "p-3 md:p-4 bg-gray-50 rounded-xl border-2 border-gray-200 flex flex-col gap-2";
+                box.id = `ex5-box-${index}`;
+                
+                const questionDiv = document.createElement('div');
+                questionDiv.className = "flex flex-wrap items-center gap-1 md:gap-2 text-sm md:text-lg font-bold text-gray-800 inter-font leading-loose md:leading-normal";
+                
+                const beforeSpan = document.createElement('span');
+                beforeSpan.textContent = item.before;
+                
+                const dropZone = document.createElement('div');
+                dropZone.className = "drop-zone min-w-[70px] md:min-w-[100px] h-8 md:h-10 rounded-lg bg-white inline-flex items-center justify-center cursor-pointer text-pink-700 font-bold text-sm md:text-base inter-font transition-colors mx-1 shrink-0 align-middle";
+                dropZone.id = `dropzone-ex5-${index}`;
+                dropZone.innerHTML = `<span class="text-[10px] md:text-xs text-gray-400 font-normal">Энд дар</span>`;
+                dropZone.onclick = () => placeWordInZoneEx5(index, item.ans, dropZone, box);
+                
+                const afterSpan = document.createElement('span');
+                afterSpan.textContent = item.after;
+
+                const mnDesc = document.createElement('p');
+                mnDesc.className = "w-full text-xs md:text-sm text-gray-500 font-semibold mt-1 border-t border-gray-200 pt-2";
+                mnDesc.textContent = item.mn;
+
+                questionDiv.appendChild(beforeSpan);
+                questionDiv.appendChild(dropZone);
+                questionDiv.appendChild(afterSpan);
+                
+                box.appendChild(questionDiv);
+                box.appendChild(mnDesc);
+                sentencesContainer.appendChild(box);
+            });
+        }
+
+        function selectWordFromBankEx5(word, btnElement) {
+            document.querySelectorAll('#word-bank-ex5 button').forEach(btn => {
+                if(!btn.disabled) btn.classList.remove('border-pink-500', 'bg-pink-100');
+            });
+            
+            selectedWordForDropEx5 = word;
+            btnElement.classList.add('border-pink-500', 'bg-pink-100', 'animate-pop');
+            setTimeout(() => btnElement.classList.remove('animate-pop'), 300);
+        }
+
+        function placeWordInZoneEx5(index, correctAns, dropZone, boxElement) {
+            if (!selectedWordForDropEx5) {
+                dropZone.classList.add('animate-shake', 'bg-yellow-100');
+                setTimeout(() => dropZone.classList.remove('animate-shake', 'bg-yellow-100'), 500);
+                return;
+            }
+
+            boxElement.classList.remove('animate-shake');
+            void boxElement.offsetWidth;
+
+            if (selectedWordForDropEx5 === correctAns) {
+                dropZone.textContent = selectedWordForDropEx5;
+                dropZone.classList.remove('border-dashed', 'border-gray-400');
+                dropZone.classList.add('filled', 'border-pink-500', 'bg-pink-100', 'animate-pop');
+                dropZone.onclick = null; 
+                boxElement.classList.add('border-pink-300', 'bg-pink-50');
+
+                const btn = document.getElementById(`bank-word-ex5-${selectedWordForDropEx5}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:-translate-y-1', 'border-pink-500', 'bg-pink-100');
+                btn.classList.add('opacity-30', 'cursor-not-allowed', 'border-gray-200');
+                
+                selectedWordForDropEx5 = null; 
+            } else {
                 boxElement.classList.add('animate-shake');
                 dropZone.classList.add('bg-red-100', 'border-red-400');
                 setTimeout(() => dropZone.classList.remove('bg-red-100', 'border-red-400'), 500);
