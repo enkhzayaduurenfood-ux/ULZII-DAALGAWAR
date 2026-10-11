@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crazy for Culture - Тоглоомт Хичээл</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0fdf4;
+            background-image: radial-gradient(#dcfce7 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #1f2937;
+        }
+        
+        .inter-font { font-family: 'Inter', sans-serif; }
+
+        .word-interactive {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin: 0 2px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .word-interactive:hover {
+            background-color: #fef08a; /* yellow-200 */
+            color: #b45309;
+            transform: scale(1.05);
+        }
+
+        .word-interactive .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            background-color: #4f46e5;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 4px 10px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .word-interactive .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #4f46e5 transparent transparent transparent;
+        }
+
+        .word-interactive:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-2deg); }
+            50% { transform: translateX(5px) rotate(2deg); }
+            75% { transform: translateX(-5px) rotate(-1deg); }
+        }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+        
+        @keyframes pop {
+            0% { transform: scale(0.9); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        .nav-btn.active {
+            background-color: #22c55e;
+            color: white;
+            box-shadow: 0 4px 0 #16a34a;
+            transform: translateY(-2px);
+        }
+        .nav-btn {
+            box-shadow: 0 4px 0 #d1d5db;
+            transition: all 0.1s;
+        }
+        .nav-btn:active {
+            box-shadow: 0 0 0 #d1d5db;
+            transform: translateY(4px);
+        }
+
+        .drop-zone {
+            border: 2px dashed #9ca3af;
+        }
+        .drop-zone.filled {
+            border-style: solid;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-16 md:pb-12 text-sm md:text-base">
+
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="max-w-5xl mx-auto px-2 md:px-4 py-3 md:py-4 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="bg-green-500 text-white p-2 rounded-lg text-xl md:text-2xl hidden sm:block">
+                    <i class="fa-solid fa-gamepad"></i>
+                </div>
+                <div class="text-center md:text-left">
+                    <h1 class="text-xl md:text-2xl font-extrabold text-gray-800 tracking-tight">Crazy for Culture?</h1>
+                    <p class="text-xs md:text-sm text-gray-500 font-semibold">Interactive Learning Game</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-1 md:gap-2 w-full md:w-auto" id="nav-tabs">
+                <!-- Tabs will be injected here by JS -->
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-2 md:px-4 mt-4 md:mt-8">
+        
+        <!-- SECTION: Reading Blog -->
+        <section id="section-read" class="game-section hidden">
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-xl border-2 md:border-4 border-indigo-100 overflow-hidden">
+                <div class="bg-indigo-500 text-white p-3 md:p-4 text-center">
+                    <h2 class="text-lg md:text-xl font-bold"><i class="fa-solid fa-book-open mr-2"></i> Блогийн эхийг унших</h2>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">Үгэн дээр дарж орчуулгыг хараарай (Тоглоом шиг)</p>
+                </div>
+                <div class="p-3 md:p-6 space-y-4 md:space-y-8" id="blog-content">
+                    <!-- Blog content injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Ex 1 -->
+        <section id="section-ex1" class="game-section hidden">
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-xl border-2 md:border-4 border-blue-100 overflow-hidden">
+                <div class="bg-blue-500 text-white p-3 md:p-4 text-center">
+                    <h2 class="text-lg md:text-xl font-bold"><i class="fa-solid fa-clipboard-question mr-2"></i> Даалгавар 1: How often?</h2>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">Та эдгээрийг хэр олон хийдэг вэ? Өөртөө тохирохыг сонгоно уу.</p>
+                </div>
+                <div class="p-3 md:p-6 space-y-4 md:space-y-6" id="ex1-content">
+                    <!-- Ex 1 injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Ex 2 -->
+        <section id="section-ex2" class="game-section hidden">
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-xl border-2 md:border-4 border-yellow-100 overflow-hidden">
+                <div class="bg-yellow-500 text-white p-3 md:p-4 text-center">
+                    <h2 class="text-lg md:text-xl font-bold"><i class="fa-solid fa-check-double mr-2"></i> Даалгавар 2: True or False</h2>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">Блогийн эхний хэсгийг санаад Үнэн (T), Худал (F) болохыг сонгоорой.</p>
+                </div>
+                <div class="p-3 md:p-6 space-y-4 md:space-y-6" id="ex2-content">
+                     <!-- Ex 2 injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Ex 3 -->
+        <section id="section-ex3" class="game-section hidden">
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-xl border-2 md:border-4 border-purple-100 overflow-hidden">
+                <div class="bg-purple-500 text-white p-3 md:p-4 text-center">
+                    <h2 class="text-lg md:text-xl font-bold"><i class="fa-solid fa-link mr-2"></i> Даалгавар 3: Matching Game</h2>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">Асуултууд хэний нийтлэлтэй тохирч байгааг (A, B, C, D) сонгоорой.</p>
+                </div>
+                <div class="p-3 md:p-6 space-y-4 md:space-y-6">
+                    <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4 mb-4 md:mb-6 md:sticky top-24 z-10 bg-white p-2 md:p-3 rounded-lg shadow border text-xs md:text-sm">
+                        <span class="font-bold w-full text-center md:w-auto">Дүрүүд:</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded font-bold text-gray-700">A - Bitmap17</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded font-bold text-gray-700">B - LadyNote</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded font-bold text-gray-700">C - NaomiX</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded font-bold text-gray-700">D - ICC77</span>
+                    </div>
+                    <div id="ex3-content" class="space-y-4">
+                        <!-- Ex 3 injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Ex 4 -->
+        <section id="section-ex4" class="game-section hidden">
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-xl border-2 md:border-4 border-green-100 overflow-hidden">
+                <div class="bg-green-600 text-white p-3 md:p-4 text-center">
+                    <h2 class="text-lg md:text-xl font-bold"><i class="fa-solid fa-puzzle-piece mr-2"></i> Даалгавар 4: Word Friends</h2>
+                    <p class="text-xs md:text-sm opacity-90 mt-1">Дээрх үгсээс дарж сонгоод, доорх хоосон зайд дарж өгүүлбэрийг гүйцээнэ үү.</p>
+                </div>
+                <div class="p-3 md:p-6">
+                    <!-- Word Bank -->
+                    <div class="bg-gray-100 p-3 md:p-4 rounded-xl border-2 border-gray-200 mb-6 md:mb-8 text-center">
+                        <p class="text-xs md:text-sm text-gray-500 mb-3 font-bold uppercase">Үгсийн сан (Эхлээд эндээс сонгоно уу)</p>
+                        <div id="word-bank" class="flex flex-wrap justify-center gap-2 md:gap-3">
+                            <!-- Word bank buttons injected via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Sentences -->
+                    <div id="ex4-content" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <!-- Ex 4 injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- DATA STRUCTURES ---
+
+        // Complete Blog Text Translation Data Word-by-Word
+        const blogData = [
+            {
+                type: "intro",
+                title: "Colleen's Corner (Оршил)",
+                sentences: [
+                    {
+                        enMn: [
+                            ["Some", "Зарим"], ["people", "хүмүүс"], ["say", "хэлдэг"], ["that", "гэж"], 
+                            ["young", "залуу"], ["people", "хүмүүс"], ["don't", "үгүй"], ["care", "санаа тавих/сонирхох"], 
+                            ["about", "тухай"], ["culture.", "соёл."]
+                        ],
+                        fullMn: "Зарим хүмүүс залуучуудыг соёл урлаг сонирхдоггүй гэж ярьдаг."
+                    },
+                    {
+                        enMn: [
+                            ["But", "Гэхдээ"], ["a", "нэг"], ["recent", "сүүлийн үеийн"], ["study", "судалгаа"], 
+                            ["shows", "харуулж байна"], ["that", "гэдгийг"], ["almost", "бараг"], ["fifty", "тавь"], 
+                            ["percent", "хувь"], ["of", "-ийн"], ["young", "залуу"], ["people", "хүмүүс"], 
+                            ["in", "дотор"], ["the UK", "Их Британи"], ["love", "дуртай"], ["watching", "үзэх"], 
+                            ["online", "онлайн"], ["videos,", "бичлэгүүд"], ["playing", "тоглох"], ["video", "видео"], 
+                            ["games", "тоглоомууд"], ["and", "болон"], ["reading.", "унших."]
+                        ],
+                        fullMn: "Гэвч саяхны нэгэн судалгаагаар Их Британийн залуучуудын бараг 50 хувь нь цахим бичлэг үзэх, видео тоглоом тоглох, ном унших дуртай болохыг харуулжээ."
+                    },
+                    {
+                        enMn: [
+                            ["They", "Тэд"], ["enjoy", "таашаал авах"], ["creating", "бүтээх"], ["and", "болон"], 
+                            ["performing", "тоглох (тайзан дээр)"], ["too.", "бас."]
+                        ],
+                        fullMn: "Тэд бас ямар нэгэн зүйл бүтээх, тайзан дээр тоглох (перформанс хийх) дуртай."
+                    },
+                    {
+                        enMn: [
+                            ["And", "Тэгээд"], ["thirty-five", "гучин таван"], ["percent", "хувь"], ["of", "-ийн"], 
+                            ["them", "тэдний"], ["share", "хуваалцдаг"], ["their", "тэдний (өөрсдийн)"], ["cultural", "соёлын"], 
+                            ["interests", "сонирхлууд"], ["on", "дээр"], ["social", "нийгмийн"], ["media.", "сүлжээ."]
+                        ],
+                        fullMn: "Тэгээд тэдний 35 хувь нь өөрсдийн соёлын сонирхлоо нийгмийн сүлжээнд хуваалцдаг байна."
+                    },
+                    {
+                        enMn: [
+                            ["What", "Юу"], ["about", "тухай"], ["you?", "чиний? (Чиний хувьд?)"], 
+                            ["Do", "Асуух үг"], ["you", "чи"], ["enjoy", "дуртай юу"], ["watching", "үзэх"], 
+                            ["films,", "кинонууд"], ["reading", "унших"], ["books", "номнууд"], ["or", "эсвэл"], 
+                            ["listening", "сонсох"], ["to", "руу"], ["music?", "хөгжим?"]
+                        ],
+                        fullMn: "Харин чиний хувьд? Чи кино үзэх, ном унших эсвэл хөгжим сонсох дуртай юу?"
+                    },
+                    {
+                        enMn: [
+                            ["Do", "Асуух үг"], ["you", "чи"], ["perform", "тоглодог уу"], ["or", "эсвэл"], 
+                            ["create", "бүтээдэг үү"], ["art?", "урлаг?"]
+                        ],
+                        fullMn: "Чи тайзан дээр тоглож эсвэл урлагийн бүтээл хийдэг үү?"
+                    },
+                    {
+                        enMn: [
+                            ["Send", "Илгээгээрэй"], ["me", "надад"], ["your", "өөрийн"], ["posts", "нийтлэлүүдээ"], 
+                            ["and", "тэгээд"], ["let", "зөвшөөрөөрэй"], ["me", "намайг"], ["know.", "мэдэх."]
+                        ],
+                        fullMn: "Надад өөрийнхөө бичвэрүүдээ явуулж, юу сонирхдог оо мэдэгдээрэй."
+                    }
+                ]
+            },
+            {
+                type: "post",
+                title: "A - Bitmap17",
+                sentences: [
+                    {
+                        enMn: [
+                            ["I", "Би"], ["love", "хайртай"], ["art,", "урлагт"], ["but", "гэхдээ"], 
+                            ["I", "би"], ["never", "хэзээ ч"], ["get", "болгох"], ["paint", "будаг"], 
+                            ["on", "дээр"], ["my", "миний"], ["fingers.", "хуруунууд."]
+                        ],
+                        fullMn: "Би урлагт хайртай, гэхдээ хэзээ ч хуруугаа будаг болгодоггүй."
+                    },
+                    {
+                        enMn: [
+                            ["I", "Би"], ["draw", "зурдаг"], ["on", "дээр"], ["my", "миний"], 
+                            ["computer", "компьютер"], ["and", "тэгээд"], ["I", "би"], ["make", "хийдэг"], 
+                            ["pictures", "зурагнууд"], ["and", "болон"], ["animations", "анимэйшнүүд"], 
+                            ["with", "ашиглан"], ["real", "бодит"], ["world", "ертөнцийн"], ["objects", "эд зүйлс"], 
+                            ["and", "болон"], ["computer", "компьютерийн"], ["images.", "зурагнууд."]
+                        ],
+                        fullMn: "Би компьютер дээрээ зурдаг бөгөөд бодит ертөнцийн объектууд болон компьютерийн зургуудыг ашиглан зураг, анимэйшн бүтээдэг."
+                    },
+                    {
+                        enMn: [
+                            ["It's", "Энэ бол"], ["amazing!", "гайхалтай!"]
+                        ],
+                        fullMn: "Энэ үнэхээр гайхалтай!"
+                    }
+                ]
+            },
+            {
+                type: "post",
+                title: "B - LadyNote",
+                sentences: [
+                    {
+                        enMn: [
+                            ["I", "Би"], ["watch", "үздэг"], ["music", "хөгжмийн"], ["videos", "бичлэгүүд"], 
+                            ["every", "бүр"], ["day,", "өдөр"], ["usually", "ихэвчлэн"], ["on", "дээр"], 
+                            ["my", "миний"], ["phone.", "утас."]
+                        ],
+                        fullMn: "Би өдөр бүр хөгжмийн бичлэг үздэг, ихэвчлэн утсан дээрээ үздэг."
+                    },
+                    {
+                        enMn: [
+                            ["I", "Би"], ["love", "дуртай"], ["going", "явах"], ["to", "руу"], 
+                            ["concerts", "тоглолтууд"], ["and", "болон"], ["watching", "үзэх"], 
+                            ["them", "тэдгээрийг"], ["online", "онлайнаар"], ["too.", "бас."]
+                        ],
+                        fullMn: "Би амьд тоглолтод явах, мөн тэдгээрийг онлайнаар үзэх дуртай."
+                    },
+                    {
+                        enMn: [
+                            ["At", "үед"], ["weekends", "амралтын өдрүүд"], ["I", "би"], ["watch", "үздэг"], 
+                            ["videos", "бичлэгүүд"], ["of", "тухай"], ["piano", "төгөлдөр хуурын"], 
+                            ["lessons", "хичээлүүд"], ["and", "тэгээд"], ["copy", "хуулбарладаг"], 
+                            ["what", "юу"], ["I", "би"], ["see.", "харсан."]
+                        ],
+                        fullMn: "Амралтын өдрүүдэд би төгөлдөр хуурын хичээлийн бичлэгүүд үзэж, харсан зүйлээ дуурайж хийдэг."
+                    },
+                    {
+                        enMn: [
+                            ["It's", "Энэ"], ["not", "биш"], ["easy,", "амархан"], ["but", "гэхдээ"], 
+                            ["I", "би"], ["love", "дуртай"], ["it.", "түүнд."]
+                        ],
+                        fullMn: "Энэ тийм ч амар биш, гэхдээ би үүнд дуртай."
+                    }
+                ]
+            },
+            {
+                type: "post",
+                title: "C - NaomiX",
+                sentences: [
+                    {
+                        enMn: [
+                            ["I", "Би"], ["want", "хүсч байна"], ["to be", "болох"], ["an", "нэг"], 
+                            ["actor.", "жүжигчин."], ["Or", "Эсвэл"], ["maybe", "магадгүй"], 
+                            ["a", "нэг"], ["director.", "найруулагч."]
+                        ],
+                        fullMn: "Би жүжигчин болмоор байна. Эсвэл магадгүй найруулагч."
+                    },
+                    {
+                        enMn: [
+                            ["Every", "Бүр"], ["year", "жил"], ["I", "би"], ["act", "тоглодог"], 
+                            ["in", "дотор"], ["the", "нөгөө"], ["school", "сургуулийн"], ["play", "жүжиг"], 
+                            ["and", "болон"], ["in", "дотор"], ["my", "миний"], ["free", "чөлөөт"], 
+                            ["time,", "цаг"], ["I", "би"], ["make", "хийдэг"], ["short", "богино"], 
+                            ["films", "кинонууд"], ["with", "хамт"], ["my", "миний"], ["friends.", "найзууд."]
+                        ],
+                        fullMn: "Жил бүр би сургуулийн жүжигт тоглодог бөгөөд чөлөөт цагаараа найзуудтайгаа богино хэмжээний кино хийдэг."
+                    },
+                    {
+                        enMn: [
+                            ["We", "Бид"], ["film", "бичлэг хийдэг"], ["them", "тэдгээрийг"], ["on", "дээр"], 
+                            ["our", "бидний"], ["phones", "утсууд"], ["and", "тэгээд"], ["share", "хуваалцдаг"], 
+                            ["them", "тэдгээрийг"], ["on", "дээр"], ["our", "бидний"], ["video", "видео"], ["channel.", "суваг."]
+                        ],
+                        fullMn: "Бид тэднийгээ утсан дээрээ бичиж аваад, өөрсдийн видео сувагтаа хуваалцдаг."
+                    }
+                ]
+            },
+            {
+                type: "post",
+                title: "D - ICC77",
+                sentences: [
+                    {
+                        enMn: [
+                            ["I", "Би"], ["love", "дуртай"], ["reading,", "унших"], 
+                            ["especially", "ялангуяа"], ["poetry.", "яруу найраг."]
+                        ],
+                        fullMn: "Би ном унших, ялангуяа яруу найраг унших дуртай."
+                    },
+                    {
+                        enMn: [
+                            ["I", "Би"], ["write", "бичдэг"], ["poems", "шүлгүүд"], ["on", "дээр"], 
+                            ["my", "миний"], ["phone", "утас"], ["or", "эсвэл"], ["my", "миний"], 
+                            ["computer", "компьютер"], ["and", "тэгээд"], ["put", "тавьдаг"], 
+                            ["them", "тэдгээрийг"], ["on", "дээр"], ["my", "миний"], ["blog.", "блог."]
+                        ],
+                        fullMn: "Би утсан дээрээ эсвэл компьютер дээрээ шүлэг бичээд блогондоо тавьдаг."
+                    },
+                    {
+                        enMn: [
+                            ["I", "Би"], ["also", "бас"], ["write", "бичдэг"], ["rap", "рэп"], 
+                            ["songs,", "дуунууд"], ["but", "гэхдээ"], ["I'm", "би бол"], ["too", "хэтэрхий"], 
+                            ["shy", "ичимхий"], ["to perform", "тайзан дээр тоглох"], ["on", "дээр"], ["stage.", "тайз."]
+                        ],
+                        fullMn: "Би бас рэп дуу бичдэг ч тайзан дээр дуулж үзүүлэхээс хэтэрхий их ичдэг."
+                    }
+                ]
+            }
+        ];
+
+        const ex1Data = [
+            { text: "play music with friends or go to a concert", mn: "найзуудтайгаа хөгжим тоглох эсвэл тоглолтод явах" },
+            { text: "paint a picture or draw on a computer", mn: "зураг зурах эсвэл компьютер дээр зурах" },
+            { text: "read poems or write poems", mn: "шүлэг унших эсвэл бичих" },
+            { text: "go dancing or dance in your bedroom", mn: "бүжиглэхээр явах эсвэл өрөөндөө бүжиглэх" }
+        ];
+        const freqOptions = ["Always (Үргэлж)", "Often (Олонтоо)", "Sometimes (Хааяа)", "Never (Хэзээ ч)"];
+
+        const ex2Data = [
+            {
+                q: "1. Colleen mentions a study about young people in the world.",
+                mn: "Коллин дэлхийн залуучуудын талаарх судалгааг дурдсан.",
+                ans: "F",
+                exp: "Буруу (False). Блогт 'young people in the UK' буюу зөвхөн Их Британийн залуучуудын тухай бичсэн байдаг."
+            },
+            {
+                q: "2. The study says that nearly half of young people take part in cultural activities.",
+                mn: "Судалгаагаар залуучуудын бараг тэн хагас нь соёлын үйл ажиллагаанд оролцдог гэжээ.",
+                ans: "T",
+                exp: "Зөв (True). Текстэнд 'almost fifty percent' буюу бараг 50% нь дуртай гэж бичсэн байдаг."
+            }
+        ];
+
+        const ex3Data = [
+            { q: "1. Who learns a skill online?", mn: "Хэн онлайнаар ур чадвар сурдаг вэ?", ans: "B", hint: "LadyNote төгөлдөр хуурын хичээл үзэж дуурайдаг." },
+            { q: "2. Who performs with other people?", mn: "Хэн бусад хүмүүстэй хамт тоглодог вэ?", ans: "C", hint: "NaomiX найзуудтайгаа, сургуульдаа тоглодог." },
+            { q: "3. Who uses a computer to change real things?", mn: "Хэн бодит зүйлсийг өөрчлөхийн тулд компьютер ашигладаг вэ?", ans: "A", hint: "Bitmap17 бодит объектоор анимэйшн хийдэг." },
+            { q: "4. Who shares their work online but not in public?", mn: "Хэн өөрийн бүтээлээ онлайнаар хуваалцдаг ч олны өмнө гардаггүй вэ?", ans: "D", hint: "ICC77 блогондоо тавьдаг ч тайзан дээр гарахаас ичдэг." },
+            { q: "5. Who is not sure what job he/she would like to have?", mn: "Хэн ямар ажилтай болохыгоо сайн мэдэхгүй эргэлзэж байгаа вэ?", ans: "C", hint: "NaomiX 'Жүжигчин эсвэл найруулагч болох байх' гэсэн." }
+        ];
+
+        const ex4Words = [
+            { en: "create", mn: "бүтээх" },
+            { en: "make", mn: "хийх" },
+            { en: "perform", mn: "тайзан дээр тоглох" },
+            { en: "play", mn: "тоглох" },
+            { en: "share", mn: "хуваалцах" },
+            { en: "watch", mn: "үзэх" }
+        ];
+        
+        const ex4Sentences = [
+            { textAfter: "art", mn: "(урлаг бүтээх)", ans: "create" },
+            { textAfter: "short films", mn: "(богино кино хийх)", ans: "make" },
+            { textAfter: "on stage", mn: "(тайзан дээр тоглох)", ans: "perform" },
+            { textAfter: "video games", mn: "(видео тоглоом тоглох)", ans: "play" },
+            { textAfter: "something on social media", mn: "(сошиал медиад хуваалцах)", ans: "share" },
+            { textAfter: "concerts/videos", mn: "(тоглолт/бичлэг үзэх)", ans: "watch" }
+        ];
+
+        let activeTab = 'read';
+        let selectedWordForDrop = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNavigation();
+            renderBlog();
+            renderEx1();
+            renderEx2();
+            renderEx3();
+            renderEx4();
+            switchTab('read');
+        });
+
+        function setupNavigation() {
+            const tabs = [
+                { id: 'read', icon: 'fa-book-open', label: 'Унших' },
+                { id: 'ex1', icon: 'fa-1', label: 'Даалгавар 1' },
+                { id: 'ex2', icon: 'fa-2', label: 'Даалгавар 2' },
+                { id: 'ex3', icon: 'fa-3', label: 'Даалгавар 3' },
+                { id: 'ex4', icon: 'fa-4', label: 'Даалгавар 4' },
+            ];
+
+            const navContainer = document.getElementById('nav-tabs');
+            tabs.forEach(tab => {
+                const btn = document.createElement('button');
+                btn.className = `nav-btn flex-grow md:flex-none justify-center px-2 py-1.5 md:px-4 md:py-2 rounded-xl text-xs md:text-base font-bold bg-white text-gray-700 border-2 border-gray-200 flex items-center gap-1 md:gap-2 hover:bg-gray-50`;
+                btn.id = `btn-${tab.id}`;
+                btn.innerHTML = `<i class="fa-solid ${tab.icon}"></i> <span class="hidden sm:inline">${tab.label}</span><span class="sm:inline hidden">${tab.label === 'Унших' ? '' : ''}</span><span class="sm:hidden">${tab.label.replace('Даалгавар ', 'Д-')}</span>`;
+                btn.onclick = () => switchTab(tab.id);
+                navContainer.appendChild(btn);
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.game-section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-green-500', 'text-white', 'border-green-600');
+                btn.classList.add('bg-white', 'text-gray-700');
+            });
+
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            activeBtn.classList.remove('bg-white', 'text-gray-700');
+            activeBtn.classList.add('active', 'border-green-600');
+        }
+
+        function renderBlog() {
+            const container = document.getElementById('blog-content');
+            
+            blogData.forEach((section, sIdx) => {
+                const secDiv = document.createElement('div');
+                secDiv.className = `p-4 rounded-xl border-2 ${section.type === 'intro' ? 'bg-indigo-50 border-indigo-200' : 'bg-gray-50 border-gray-200'}`;
+                
+                const title = document.createElement('h3');
+                title.className = `text-lg font-extrabold mb-3 ${section.type === 'intro' ? 'text-indigo-700' : 'text-gray-700'}`;
+                title.innerHTML = section.type === 'intro' ? `<i class="fa-solid fa-star text-yellow-400 mr-2"></i>${section.title}` : `<i class="fa-solid fa-user-circle text-gray-400 mr-2"></i>${section.title}`;
+                secDiv.appendChild(title);
+
+                const sentsDiv = document.createElement('div');
+                sentsDiv.className = "space-y-4";
+
+                section.sentences.forEach((sent, iIdx) => {
+                    const sentWrapper = document.createElement('div');
+                    sentWrapper.className = "p-3 bg-white rounded-lg shadow-sm border border-gray-100 hover:border-indigo-300 transition-colors";
+                    
+                    const pEn = document.createElement('p');
+                    pEn.className = "text-lg md:text-xl font-medium text-gray-800 leading-relaxed inter-font";
+                    
+                    // Create interactive words
+                    sent.enMn.forEach(wordPair => {
+                        const span = document.createElement('span');
+                        span.className = "word-interactive";
+                        span.innerHTML = `${wordPair[0]}<span class="tooltip-text inter-font">${wordPair[1]}</span>`;
+                        pEn.appendChild(span);
+                        // Add space
+                        pEn.appendChild(document.createTextNode(" "));
+                    });
+
+                    const pMn = document.createElement('p');
+                    pMn.className = "text-sm text-gray-500 mt-2 pl-3 border-l-4 border-indigo-300 italic font-semibold";
+                    pMn.textContent = sent.fullMn;
+
+                    sentWrapper.appendChild(pEn);
+                    sentWrapper.appendChild(pMn);
+                    sentsDiv.appendChild(sentWrapper);
+                });
+                
+                secDiv.appendChild(sentsDiv);
+                container.appendChild(secDiv);
+            });
+        }
+
+        function renderEx1() {
+            const container = document.getElementById('ex1-content');
+            ex1Data.forEach((item, index) => {
+                const box = document.createElement('div');
+                box.className = "p-3 md:p-4 bg-gray-50 rounded-xl border-2 border-blue-100";
+                
+                box.innerHTML = `
+                    <div class="mb-3">
+                        <p class="font-bold text-base md:text-lg text-gray-800 inter-font">${index + 1}. ${item.text}</p>
+                        <p class="text-xs md:text-sm text-gray-500 font-semibold">${item.mn}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" id="ex1-options-${index}">
+                    </div>
+                `;
+                container.appendChild(box);
+
+                const optsContainer = box.querySelector(`#ex1-options-${index}`);
+                freqOptions.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "px-3 py-1 rounded-full bg-white border-2 border-gray-300 text-xs md:text-sm font-bold text-gray-600 hover:border-blue-400 hover:text-blue-500 transition-all focus:outline-none";
+                    btn.textContent = opt;
+                    btn.onclick = (e) => {
+                        // Reset siblings
+                        Array.from(optsContainer.children).forEach(c => {
+                            c.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
+                            c.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
+                        });
+                        // Select this
+                        e.target.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
+                        e.target.classList.add('bg-blue-500', 'text-white', 'border-blue-500', 'animate-pop');
+                        setTimeout(() => e.target.classList.remove('animate-pop'), 300);
+                    };
+                    optsContainer.appendChild(btn);
+                });
+            });
+        }
+
+        function renderEx2() {
+            const container = document.getElementById('ex2-content');
+            ex2Data.forEach((item, index) => {
+                const box = document.createElement('div');
+                box.className = "p-3 md:p-4 bg-gray-50 rounded-xl border-2 border-yellow-100 relative";
+                box.id = `ex2-box-${index}`;
+                
+                box.innerHTML = `
+                    <p class="font-bold text-base md:text-lg text-gray-800 inter-font">${item.q}</p>
+                    <p class="text-xs md:text-sm text-gray-500 font-semibold mb-3 md:mb-4">${item.mn}</p>
+                    <div class="flex flex-col sm:flex-row gap-2 md:gap-4">
+                        <button onclick="checkEx2(${index}, 'T')" class="flex-1 py-2 rounded-lg font-black text-lg md:text-xl border-4 border-gray-200 bg-white hover:bg-gray-100 transition-colors text-gray-700">TRUE (T)</button>
+                        <button onclick="checkEx2(${index}, 'F')" class="flex-1 py-2 rounded-lg font-black text-lg md:text-xl border-4 border-gray-200 bg-white hover:bg-gray-100 transition-colors text-gray-700">FALSE (F)</button>
+                    </div>
+                    <div id="ex2-feedback-${index}" class="hidden mt-3 md:mt-4 p-3 rounded-lg text-sm font-bold animate-pop"></div>
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function checkEx2(index, selectedAns) {
+            const item = ex2Data[index];
+            const feedback = document.getElementById(`ex2-feedback-${index}`);
+            const box = document.getElementById(`ex2-box-${index}`);
+            
+            feedback.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+            box.classList.remove('animate-shake');
+
+            // Force reflow for animation restart
+            void box.offsetWidth; 
+
+            if (selectedAns === item.ans) {
+                feedback.classList.add('bg-green-100', 'text-green-800');
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> Зөв байна! <br><span class="font-normal mt-1 block">${item.exp}</span>`;
+            } else {
+                box.classList.add('animate-shake');
+                feedback.classList.add('bg-red-100', 'text-red-800');
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Буруу байна. Ахиад бодоод үзээрэй.`;
+            }
+        }
+
+        function renderEx3() {
+            const container = document.getElementById('ex3-content');
+            const options = ['A', 'B', 'C', 'D'];
+
+            ex3Data.forEach((item, index) => {
+                const box = document.createElement('div');
+                box.className = "p-3 md:p-4 bg-gray-50 rounded-xl border-2 border-purple-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4";
+                box.id = `ex3-box-${index}`;
+                
+                const textDiv = document.createElement('div');
+                textDiv.className = "flex-1";
+                textDiv.innerHTML = `
+                    <p class="font-bold text-base md:text-lg text-gray-800 inter-font">${item.q}</p>
+                    <p class="text-xs md:text-sm text-gray-500 font-semibold">${item.mn}</p>
+                    <p id="ex3-hint-${index}" class="hidden text-xs text-purple-600 mt-2 font-bold bg-purple-100 p-2 rounded animate-pop"><i class="fa-solid fa-lightbulb"></i> Тайлбар: ${item.hint}</p>
+                `;
+
+                const btnDiv = document.createElement('div');
+                btnDiv.className = "flex gap-2 justify-start sm:justify-end w-full sm:w-auto";
+                
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-10 h-10 rounded-full font-black text-lg bg-white border-2 border-gray-300 hover:border-purple-500 hover:text-purple-600 transition-all focus:outline-none";
+                    btn.textContent = opt;
+                    btn.onclick = () => checkEx3(index, opt, btn, btnDiv);
+                    btnDiv.appendChild(btn);
+                });
+
+                box.appendChild(textDiv);
+                box.appendChild(btnDiv);
+                container.appendChild(box);
+            });
+        }
+
+        function checkEx3(index, selectedAns, btnElement, btnContainer) {
+            const item = ex3Data[index];
+            const box = document.getElementById(`ex3-box-${index}`);
+            const hint = document.getElementById(`ex3-hint-${index}`);
+            
+            box.classList.remove('animate-shake');
+            void box.offsetWidth; // reflow
+
+            if (selectedAns === item.ans) {
+                // Correct
+                Array.from(btnContainer.children).forEach(btn => {
+                    btn.disabled = true; // Lock after correct
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+                btnElement.classList.remove('bg-white', 'border-gray-300', 'opacity-50');
+                btnElement.classList.add('bg-green-500', 'text-white', 'border-green-600', 'animate-pop', 'opacity-100');
+                hint.classList.remove('hidden');
+                box.classList.add('border-green-300', 'bg-green-50');
+            } else {
+                // Wrong
+                box.classList.add('animate-shake');
+                btnElement.classList.add('bg-red-500', 'text-white', 'border-red-600', 'animate-pop');
+                setTimeout(() => {
+                    btnElement.classList.remove('bg-red-500', 'text-white', 'border-red-600', 'animate-pop');
+                }, 800);
+            }
+        }
+
+        function renderEx4() {
+            const bankContainer = document.getElementById('word-bank');
+            const sentencesContainer = document.getElementById('ex4-content');
+            
+            // Create Word Bank Buttons
+            ex4Words.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "flex flex-col items-center justify-center px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-white border-4 border-gray-300 hover:border-green-500 hover:-translate-y-1 transition-all shadow-sm inter-font min-w-[80px] md:min-w-[100px]";
+                btn.innerHTML = `<span class="font-black text-base md:text-lg text-gray-800">${item.en}</span><span class="text-[10px] md:text-xs text-green-600 font-bold mt-0.5 md:mt-1 leading-tight">${item.mn}</span>`;
+                btn.id = `bank-word-${item.en}`;
+                btn.onclick = () => selectWordFromBank(item.en, btn);
+                bankContainer.appendChild(btn);
+            });
+
+            // Create Sentences with Dropzones
+            ex4Sentences.forEach((item, index) => {
+                const box = document.createElement('div');
+                box.className = "p-3 md:p-4 bg-gray-50 rounded-xl border-2 border-gray-200 flex items-center gap-2 md:gap-3";
+                box.id = `ex4-box-${index}`;
+                
+                const num = document.createElement('span');
+                num.className = "text-gray-400 font-bold text-lg md:text-xl shrink-0";
+                num.textContent = index + 1 + ".";
+                
+                const dropZone = document.createElement('div');
+                dropZone.className = "drop-zone min-w-[70px] md:min-w-[100px] shrink-0 h-10 rounded-lg bg-white flex items-center justify-center cursor-pointer text-green-700 font-bold text-sm md:text-base inter-font transition-colors";
+                dropZone.id = `dropzone-${index}`;
+                dropZone.innerHTML = `<span class="text-[10px] md:text-xs text-gray-400 font-normal">Энд дар</span>`;
+                dropZone.onclick = () => placeWordInZone(index, item.ans, dropZone, box);
+
+                const textPart = document.createElement('div');
+                textPart.className = "flex-1 leading-tight min-w-0";
+                textPart.innerHTML = `
+                    <span class="font-bold text-gray-800 text-sm md:text-lg inter-font break-words">${item.textAfter}</span><br>
+                    <span class="text-[10px] md:text-xs text-gray-500 font-semibold break-words">${item.mn}</span>
+                `;
+
+                box.appendChild(num);
+                box.appendChild(dropZone);
+                box.appendChild(textPart);
+                sentencesContainer.appendChild(box);
+            });
+        }
+
+        function selectWordFromBank(word, btnElement) {
+            // Deselect previous
+            document.querySelectorAll('#word-bank button').forEach(btn => {
+                if(!btn.disabled) btn.classList.remove('border-green-500', 'bg-green-100');
+            });
+            
+            selectedWordForDrop = word;
+            btnElement.classList.add('border-green-500', 'bg-green-100', 'animate-pop');
+            setTimeout(() => btnElement.classList.remove('animate-pop'), 300);
+        }
+
+        function placeWordInZone(index, correctAns, dropZone, boxElement) {
+            if (!selectedWordForDrop) {
+                // Shake if clicked without selecting word
+                dropZone.classList.add('animate-shake', 'bg-yellow-100');
+                setTimeout(() => dropZone.classList.remove('animate-shake', 'bg-yellow-100'), 500);
+                return;
+            }
+
+            boxElement.classList.remove('animate-shake');
+            void boxElement.offsetWidth;
+
+            if (selectedWordForDrop === correctAns) {
+                // Correct!
+                dropZone.textContent = selectedWordForDrop;
+                dropZone.classList.remove('border-dashed', 'border-gray-400');
+                dropZone.classList.add('filled', 'border-green-500', 'bg-green-100', 'animate-pop');
+                dropZone.onclick = null; // Disable clicking again
+                boxElement.classList.add('border-green-300', 'bg-green-50');
+
+                // Disable button in bank
+                const btn = document.getElementById(`bank-word-${selectedWordForDrop}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:-translate-y-1', 'border-green-500', 'bg-green-100');
+                btn.classList.add('opacity-30', 'cursor-not-allowed', 'border-gray-200');
+                
+                selectedWordForDrop = null; // Reset selection
+                
+                // Check if game complete (optional confetti or sound could go here)
+            } else {
+                // Wrong
+                boxElement.classList.add('animate-shake');
+                dropZone.classList.add('bg-red-100', 'border-red-400');
+                setTimeout(() => dropZone.classList.remove('bg-red-100', 'border-red-400'), 500);
+            }
+        }
+
+    </script>
+</body>
+</html>
